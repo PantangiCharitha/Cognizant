@@ -30,4 +30,8 @@ public void addCountry(Country country) {
     countryRepository.save(country);
 
     }
+    @Transactional
+public Country getCountryWithEmployees(String code) {
+    return countryRepository.findById(code).orElse(null);
+}
 }

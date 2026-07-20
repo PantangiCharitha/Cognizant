@@ -9,7 +9,12 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.ApplicationContext;
 
 import com.cognizant.orm_learn.model.Country;
+import com.cognizant.orm_learn.model.Employee;
 import com.cognizant.orm_learn.service.CountryService;
+import com.cognizant.orm_learn.service.EmployeeService;
+import com.cognizant.orm_learn.model.Skill;
+import com.cognizant.orm_learn.service.SkillService;
+
 
 @SpringBootApplication
 public class OrmLearnApplication {
@@ -18,57 +23,113 @@ public class OrmLearnApplication {
             LoggerFactory.getLogger(OrmLearnApplication.class);
 
     private static CountryService countryService;
+    private static EmployeeService employeeService;
+    private static SkillService skillService;
 
     public static void main(String[] args) {
 
-    ApplicationContext context =
-            SpringApplication.run(OrmLearnApplication.class, args);
+        ApplicationContext context =
+                SpringApplication.run(OrmLearnApplication.class, args);
 
-    LOGGER.info("Inside main");
+        LOGGER.info("Inside main");
 
-    countryService = context.getBean(CountryService.class);
+        countryService = context.getBean(CountryService.class);
+        employeeService = context.getBean(EmployeeService.class);
+        skillService = context.getBean(SkillService.class);
 
-   
+        testManyToMany();
+    }
 
-    testAddCountry();
-}
     private static void testGetAllCountries() {
 
         LOGGER.info("Start");
 
-        List<Country> countries =
-                countryService.getAllCountries();
+        List<Country> countries = countryService.getAllCountries();
 
         LOGGER.debug("Countries = {}", countries);
 
         LOGGER.info("End");
     }
-	private static void testGetCountry() {
 
-    LOGGER.info("Start");
+    private static void testGetCountry() {
 
-    Country country = countryService.getCountry("IN");
+        LOGGER.info("Start");
 
-    LOGGER.debug("Country = {}", country);
+        Country country = countryService.getCountry("IN");
 
-    LOGGER.info("End");
+        LOGGER.debug("Country = {}", country);
 
-}
-private static void testAddCountry() {
+        LOGGER.info("End");
+    }
 
-    LOGGER.info("Start");
+    private static void testAddCountry() {
 
-    Country country = new Country();
+        LOGGER.info("Start");
 
-    country.setCode("JP");
-    country.setName("Japan");
+        Country country = new Country();
 
-    countryService.addCountry(country);
+        country.setCode("JP");
+        country.setName("Japan");
 
-    Country newCountry = countryService.getCountry("JP");
+        countryService.addCountry(country);
 
-    LOGGER.debug("Added Country = {}", newCountry);
+        Country newCountry = countryService.getCountry("JP");
 
-    LOGGER.info("End");
+        LOGGER.debug("Added Country = {}", newCountry);
+
+        LOGGER.info("End");
+    }
+
+    private static void testGetAllEmployees() {
+
+        LOGGER.info("Start Employee Test");
+
+        List<Employee> employees = employeeService.getAllEmployees();
+
+        for (Employee employee : employees) {
+
+            LOGGER.info("Employee Name : {}", employee.getName());
+            LOGGER.info("Salary        : {}", employee.getSalary());
+            LOGGER.info("Country       : {}", employee.getCountry().getName());
+
+            LOGGER.info("------------------------------");
+        }
+
+        LOGGER.info("End Employee Test");
+    }
+
+    private static void testOneToMany() {
+
+        LOGGER.info("========== OneToMany Demo ==========");
+
+        Country country = countryService.getCountryWithEmployees("IN");
+
+        LOGGER.info("Country : {}", country.getName());
+
+        LOGGER.info("Employees:");
+
+        for (Employee employee : country.getEmployees()) {
+
+            LOGGER.info(employee.getName());
+
+        }
+
+        LOGGER.info("========== End ==========");
+    }
+    private static void testManyToMany() {
+
+    LOGGER.info("========== ManyToMany Demo ==========");
+
+    Skill skill = skillService.getSkill(2);
+
+    LOGGER.info("Skill : {}", skill.getName());
+
+    LOGGER.info("Employees having this skill:");
+
+    for (Employee employee : skill.getEmployees()) {
+        LOGGER.info(employee.getName());
+    }
+
+    LOGGER.info("========== End ==========");
 }
 }
