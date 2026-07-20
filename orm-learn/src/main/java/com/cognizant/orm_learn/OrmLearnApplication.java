@@ -37,7 +37,7 @@ public class OrmLearnApplication {
         employeeService = context.getBean(EmployeeService.class);
         skillService = context.getBean(SkillService.class);
 
-        testManyToMany();
+        testNativeQuery();
     }
 
     private static void testGetAllCountries() {
@@ -131,5 +131,57 @@ public class OrmLearnApplication {
     }
 
     LOGGER.info("========== End ==========");
+}
+private static void testHQL() {
+
+    LOGGER.info("========== HQL Demo ==========");
+
+    List<Country> countries = countryService.getAllCountriesHQL();
+
+    countries.forEach(System.out::println);
+
+    LOGGER.info("==============================");
+}
+private static void testHQLWhere() {
+
+    LOGGER.info("========== HQL WHERE Demo ==========");
+
+    Country country = countryService.getCountryByCodeHQL("IN");
+
+    LOGGER.info("Country = {}", country);
+
+    LOGGER.info("====================================");
+}
+private static void testCount() {
+
+    LOGGER.info("========== COUNT Demo ==========");
+
+    LOGGER.info("Total Countries = {}", countryService.getCountryCount());
+
+    LOGGER.info("===============================");
+}
+private static void testFetchJoin() {
+
+    LOGGER.info("========== FETCH JOIN Demo ==========");
+
+    Country country = countryService.getCountryWithEmployeesHQL("IN");
+
+    LOGGER.info("Country : {}", country.getName());
+
+    for (Employee employee : country.getEmployees()) {
+        LOGGER.info(employee.getName());
+    }
+
+    LOGGER.info("===============================");
+}
+private static void testNativeQuery() {
+
+    LOGGER.info("========== Native Query Demo ==========");
+
+    List<Country> countries = countryService.getAllCountriesNative();
+
+    countries.forEach(System.out::println);
+
+    LOGGER.info("=======================================");
 }
 }
