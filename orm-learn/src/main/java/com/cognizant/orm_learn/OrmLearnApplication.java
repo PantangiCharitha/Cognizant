@@ -9,7 +9,12 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.ApplicationContext;
 
 import com.cognizant.orm_learn.model.Country;
+import com.cognizant.orm_learn.model.Employee;
 import com.cognizant.orm_learn.service.CountryService;
+import com.cognizant.orm_learn.service.EmployeeService;
+import com.cognizant.orm_learn.model.Skill;
+import com.cognizant.orm_learn.service.SkillService;
+
 
 @SpringBootApplication
 public class OrmLearnApplication {
@@ -18,57 +23,165 @@ public class OrmLearnApplication {
             LoggerFactory.getLogger(OrmLearnApplication.class);
 
     private static CountryService countryService;
+    private static EmployeeService employeeService;
+    private static SkillService skillService;
 
     public static void main(String[] args) {
 
-    ApplicationContext context =
-            SpringApplication.run(OrmLearnApplication.class, args);
+        ApplicationContext context =
+                SpringApplication.run(OrmLearnApplication.class, args);
 
-    LOGGER.info("Inside main");
+        LOGGER.info("Inside main");
 
-    countryService = context.getBean(CountryService.class);
+        countryService = context.getBean(CountryService.class);
+        employeeService = context.getBean(EmployeeService.class);
+        skillService = context.getBean(SkillService.class);
 
-   
+        testNativeQuery();
+    }
 
-    testAddCountry();
-}
     private static void testGetAllCountries() {
 
         LOGGER.info("Start");
 
-        List<Country> countries =
-                countryService.getAllCountries();
+        List<Country> countries = countryService.getAllCountries();
 
         LOGGER.debug("Countries = {}", countries);
 
         LOGGER.info("End");
     }
-	private static void testGetCountry() {
 
-    LOGGER.info("Start");
+    private static void testGetCountry() {
 
-    Country country = countryService.getCountry("IN");
+        LOGGER.info("Start");
 
-    LOGGER.debug("Country = {}", country);
+        Country country = countryService.getCountry("IN");
 
-    LOGGER.info("End");
+        LOGGER.debug("Country = {}", country);
 
+        LOGGER.info("End");
+    }
+
+    private static void testAddCountry() {
+
+        LOGGER.info("Start");
+
+        Country country = new Country();
+
+        country.setCode("JP");
+        country.setName("Japan");
+
+        countryService.addCountry(country);
+
+        Country newCountry = countryService.getCountry("JP");
+
+        LOGGER.debug("Added Country = {}", newCountry);
+
+        LOGGER.info("End");
+    }
+
+    private static void testGetAllEmployees() {
+
+        LOGGER.info("Start Employee Test");
+
+        List<Employee> employees = employeeService.getAllEmployees();
+
+        for (Employee employee : employees) {
+
+            LOGGER.info("Employee Name : {}", employee.getName());
+            LOGGER.info("Salary        : {}", employee.getSalary());
+            LOGGER.info("Country       : {}", employee.getCountry().getName());
+
+            LOGGER.info("------------------------------");
+        }
+
+        LOGGER.info("End Employee Test");
+    }
+
+    private static void testOneToMany() {
+
+        LOGGER.info("========== OneToMany Demo ==========");
+
+        Country country = countryService.getCountryWithEmployees("IN");
+
+        LOGGER.info("Country : {}", country.getName());
+
+        LOGGER.info("Employees:");
+
+        for (Employee employee : country.getEmployees()) {
+
+            LOGGER.info(employee.getName());
+
+        }
+
+        LOGGER.info("========== End ==========");
+    }
+    private static void testManyToMany() {
+
+    LOGGER.info("========== ManyToMany Demo ==========");
+
+    Skill skill = skillService.getSkill(2);
+
+    LOGGER.info("Skill : {}", skill.getName());
+
+    LOGGER.info("Employees having this skill:");
+
+    for (Employee employee : skill.getEmployees()) {
+        LOGGER.info(employee.getName());
+    }
+
+    LOGGER.info("========== End ==========");
 }
-private static void testAddCountry() {
+private static void testHQL() {
 
-    LOGGER.info("Start");
+    LOGGER.info("========== HQL Demo ==========");
 
-    Country country = new Country();
+    List<Country> countries = countryService.getAllCountriesHQL();
 
-    country.setCode("JP");
-    country.setName("Japan");
+    countries.forEach(System.out::println);
 
-    countryService.addCountry(country);
+    LOGGER.info("==============================");
+}
+private static void testHQLWhere() {
 
-    Country newCountry = countryService.getCountry("JP");
+    LOGGER.info("========== HQL WHERE Demo ==========");
 
-    LOGGER.debug("Added Country = {}", newCountry);
+    Country country = countryService.getCountryByCodeHQL("IN");
 
-    LOGGER.info("End");
+    LOGGER.info("Country = {}", country);
+
+    LOGGER.info("====================================");
+}
+private static void testCount() {
+
+    LOGGER.info("========== COUNT Demo ==========");
+
+    LOGGER.info("Total Countries = {}", countryService.getCountryCount());
+
+    LOGGER.info("===============================");
+}
+private static void testFetchJoin() {
+
+    LOGGER.info("========== FETCH JOIN Demo ==========");
+
+    Country country = countryService.getCountryWithEmployeesHQL("IN");
+
+    LOGGER.info("Country : {}", country.getName());
+
+    for (Employee employee : country.getEmployees()) {
+        LOGGER.info(employee.getName());
+    }
+
+    LOGGER.info("===============================");
+}
+private static void testNativeQuery() {
+
+    LOGGER.info("========== Native Query Demo ==========");
+
+    List<Country> countries = countryService.getAllCountriesNative();
+
+    countries.forEach(System.out::println);
+
+    LOGGER.info("=======================================");
 }
 }

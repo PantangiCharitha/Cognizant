@@ -2,36 +2,36 @@ package com.cognizant.orm_learn.model;
 
 import java.util.List;
 
-import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
-import jakarta.persistence.FetchType;
 import jakarta.persistence.Id;
-import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
+import jakarta.persistence.Column;
+import jakarta.persistence.ManyToMany;
+import jakarta.persistence.FetchType;
 
 @Entity
-@Table(name = "country")
-public class Country {
+@Table(name = "skill")
+public class Skill {
 
     @Id
-    @Column(name = "code")
-    private String code;
+    @Column(name = "id")
+    private int id;
 
     @Column(name = "name")
     private String name;
 
-    @OneToMany(mappedBy = "country", fetch = FetchType.LAZY)
+    @ManyToMany(mappedBy = "skills", fetch = FetchType.LAZY)
     private List<Employee> employees;
 
-    public Country() {
+    public Skill() {
     }
 
-    public String getCode() {
-        return code;
+    public int getId() {
+        return id;
     }
 
-    public void setCode(String code) {
-        this.code = code;
+    public void setId(int id) {
+        this.id = id;
     }
 
     public String getName() {
@@ -48,10 +48,5 @@ public class Country {
 
     public void setEmployees(List<Employee> employees) {
         this.employees = employees;
-    }
-
-    @Override
-    public String toString() {
-        return "Country [code=" + code + ", name=" + name + "]";
     }
 }
